@@ -3,6 +3,7 @@ package com.rest.loans.services;
 import com.rest.loans.dtos.InterestRate;
 import com.rest.loans.entities.Loan;
 import com.rest.loans.repositories.LoanRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ public class LoanService {
     @Autowired
     private RestTemplate restTemplate;
 
+
+    @CircuitBreaker(name = "loan-service", fallbackMethod = "getDefaultLoans")
     public List<Loan> getAllLoansByType(String type) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -35,5 +38,9 @@ public class LoanService {
             }
         }
         return loanList;
+    }
+
+    public List<Loan> getDefaultLoans(Exception e) {
+        return new ArrayList<>();
     }
 }
