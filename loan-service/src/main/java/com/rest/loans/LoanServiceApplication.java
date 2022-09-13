@@ -29,8 +29,9 @@ public class LoanServiceApplication {
 	@PostConstruct
 	public void setupData() {
 		loanRepository.saveAll(Arrays.asList(
-				Loan.builder().id(1).type("PERSONAL").amount(200000.0).interest(0.0).build(),
-				Loan.builder().id(2).type("HOUSING").amount(6000000.0).interest(0.0).build()
+			Loan.builder().id(1).type("PERSONAL").amount(200000.0).interest(0.0).build(),
+			Loan.builder().id(2).type("HOUSING").amount(6000000.0).interest(0.0).build(),
+			Loan.builder().id(3).type("PERSONAL").amount(100000.0).interest(0.0).build()
 		));
 	}
 }

@@ -21,20 +21,26 @@ public class LoanService {
     @Autowired
     private RestTemplate restTemplate;
 
+    private static final String SERVICE_NAME = "loan-service";
 
-    @CircuitBreaker(name = "loan-service", fallbackMethod = "getDefaultLoans")
+    private static final String RATE_SERVICE_URL = "http://localhost:9000/api/rates/";
+
+    @CircuitBreaker(name = SERVICE_NAME, fallbackMethod = "getDefaultLoans")
     public List<Loan> getAllLoansByType(String type) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<InterestRate> entity = new HttpEntity<>(null, headers);
         ResponseEntity<InterestRate> response = restTemplate.exchange(
-                ("http://localhost:9000/api/rates/" + type), HttpMethod.GET, entity, InterestRate.class);
+            (RATE_SERVICE_URL + type),
+            HttpMethod.GET, entity,
+            InterestRate.class
+        );
         InterestRate rate = response.getBody();
         List<Loan> loanList = new ArrayList<>();
         if (rate != null) {
             loanList = loanRepository.findByType(type);
             for (Loan loan : loanList) {
-                loan.setInterest(loan.getAmount() * (rate.getRateValue()/100));
+                loan.setInterest(loan.getAmount() * (rate.getRateValue() / 100));
             }
         }
         return loanList;
